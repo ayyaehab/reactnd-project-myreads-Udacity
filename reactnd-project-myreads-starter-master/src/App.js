@@ -4,6 +4,7 @@ import './App.css'
 
 import { Route, Routes } from "react-router-dom";
 import Home from './pages/Home'
+import NotFound from './pages/NotFound'
 import Search from './pages/Search'
 
 class BooksApp extends React.Component {
@@ -13,6 +14,7 @@ class BooksApp extends React.Component {
     return (
       
        <Routes>
+         <Route path='*' element={<NotFound />} />
          <Route path="/" element={<Home />} />
          <Route path="/search" element={<Search />} />
        </Routes>

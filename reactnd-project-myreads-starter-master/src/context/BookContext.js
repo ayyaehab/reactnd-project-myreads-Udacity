@@ -11,7 +11,6 @@ export const AuthProvider = ({children}) => {
     const [books, setBooks] = useState([])
     const [status, setstatus] = useState(false)
     useEffect(() => {
-        // console.log("fired")
         BooksAPI.getAll()
         .then(data => {
             setBooks(data)
@@ -20,16 +19,19 @@ export const AuthProvider = ({children}) => {
           );
           
       }, []);
-    
+       
+      
       let updateShelf = (bookId, shelf)=> {
-         BooksAPI.update(bookId, shelf)
-        //  console.log("fired")
-         BooksAPI.getAll()
-         .then(data => {
-            setBooks(data)
-            setstatus(true)
-          }
-          );
+        BooksAPI.update(bookId, shelf).then(()=> {
+            BooksAPI.getAll()
+             .then(data => {
+                setBooks(data)
+                setstatus(true)
+              }
+              )}).catch((error) => {
+            
+            return(<h2>Error in update:{error}</h2>)
+      })
       
     }
 

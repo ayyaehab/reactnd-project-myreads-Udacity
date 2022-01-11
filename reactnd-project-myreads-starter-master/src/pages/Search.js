@@ -3,29 +3,28 @@ import { useNavigate } from 'react-router-dom'
 import * as BooksAPI from '../BooksAPI'
 import BookContext from "../context/BookContext";
 const Search = () => {
-    let {updateShelf } = useContext(BookContext);
+    let {updateShelf, books} = useContext(BookContext); 
     const [query, setQuery] = useState("");
-    const [books, setSearch] = useState([])
-    // const [status2, setstatus] = useState()
+    const [searchresult, setSearch] = useState([])
     const navigate = useNavigate()
     function handleClick() {
         navigate('/')
       }
+     
     useEffect(() => {
-
-        let isActive = true;
+      let isActive = true;
         if (query) {
             BooksAPI.search(query).then(data => {
                 if (data.error) {
                     setSearch([])
                 } else {
                     if (isActive) {
-                        setSearch(data);
+                        setSearch(data)   
                     }
                 }
             })
         }
-
+        
         return () => {
             isActive = false;
             setSearch([])
@@ -36,7 +35,7 @@ const Search = () => {
     return (
         <div className="app">
 
-<div className="search-books">
+          <div className="search-books">
             <div className="search-books-bar">
               <button className="close-search" onClick={handleClick}>Close</button>
               <div className="search-books-input-wrapper" >
@@ -54,13 +53,25 @@ const Search = () => {
             </div>
             <div className="search-books-results">
               <ol className="books-grid">
-              {books? books.map(book => 
-          <li key={book.id}>
+              {   
+  searchresult.map(matchedBook => {
+          let shelf = "none"
+          books.forEach(book => {
+          if (book.id !== matchedBook.id) {
+              matchedBook.shelf = "none"
+          } else {
+              shelf = book.shelf
+          }
+      })
+      
+      return(
+        <li key={matchedBook.id}>
         <div className="book">
             <div className="book-top">
-                <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${book.imageLinks.thumbnail})` }}></div>
+              {matchedBook.imageLinks?<div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${matchedBook.imageLinks.thumbnail})` }}></div>
+              :<div className="book-cover" style={{ width: 128, height: 193 }}></div>}
                 <div className="book-shelf-changer">
-                    <select defaultValue={book.shelf ? book.shelf : "none"} onChange={(e) => updateShelf(book.id, e.target.value)} >
+                    <select defaultValue={shelf} onChange={(e) => updateShelf(matchedBook.id, e.target.value)} >
                         <option value="move" disabled>Move to...</option>
                         <option value="currentlyReading">Currently Reading</option>
                         <option value="wantToRead">Want to Read</option>
@@ -69,11 +80,16 @@ const Search = () => {
                     </select>
                 </div>
             </div>
-            <div className="book-title">{book.title}</div>
-            <div className="book-authors">{book.publisher}</div>
+            <div className="book-title">{matchedBook.title}</div>
+            {matchedBook.authors?
+             <div className="book-authors">{matchedBook.authors.join()}</div>
+             :null} 
         </div>
-        </li>)
-    :<div></div>}
+        </li>
+      )
+  }
+  )
+}
               </ol>
             </div>
           </div>
@@ -83,3 +99,6 @@ const Search = () => {
 }
  
 export default Search;
+
+
+

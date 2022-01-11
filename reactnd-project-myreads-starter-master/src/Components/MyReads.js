@@ -1,8 +1,8 @@
 import React, {useContext  } from 'react'
 import BookContext from "../context/BookContext";
-// import * as BooksAPI from '../BooksAPI'
 const MyReads = () => {
     let { books ,status, updateShelf } = useContext(BookContext);
+    
     return (  <div className="bookshelf">
     <h2 className="bookshelf-title">Read</h2>
     <div className="bookshelf-books">
@@ -13,7 +13,8 @@ const MyReads = () => {
           <li key={book.id}>
         <div className="book">
             <div className="book-top">
-                <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${book.imageLinks.thumbnail})` }}></div>
+            {book.imageLinks?<div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${book.imageLinks.thumbnail})` }}></div>
+              :<div className="book-cover" style={{ width: 128, height: 193 }}></div>}
                 <div className="book-shelf-changer">
                     <select defaultValue={book.shelf ? book.shelf : "none"} onChange={(e) => updateShelf(book.id, e.target.value)} >
                         <option value="move" disabled>Move to...</option>
@@ -25,12 +26,18 @@ const MyReads = () => {
                 </div>
             </div>
             <div className="book-title">{book.title}</div>
-            <div className="book-authors">{book.publisher}</div>
+             {book.authors?
+             <div className="book-authors">{book.authors.join()}</div>
+             :null} 
+            {/* {book.authors?book.authors.map(author=>
+            <div className="book-authors" key={author}>{author}</div>
+            ):null} */}
+            
         </div>
-        </li>:
-        <div></div>
+        </li>
+        :null
         })
-    :<div></div>}
+    :null}
       </ol>
     </div>
   </div> );
